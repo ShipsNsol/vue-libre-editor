@@ -2,11 +2,14 @@
 
 ## Project Background
 
+한글
 이 위즈윅 에디터는 90% 이상 AI로 작성된 코드입니다. 무료 에디터가 필요하신분은 편히 쓰십시오.
 추가적으로 제가 필요할시에만 업데이트는 진행할 예정입니다.
 이 에디터를 만든 목적은 대부분의 위즈윅 에디터는 무료로 제공되지않습니다.
 무료라고 적어두고 로컬호스트에서만 무료로 사용할 수 있게 되어있습니다.
 또한 영구라이센스도 거의 없으며 가격이 매우 불합리적이라고 생각해서 만들게 되었습니다.
+
+English
 This WYSIWYG editor is written over 90% by AI. Feel free to use it if you need a free editor.
 Updates will only be made when I personally need them.
 The purpose of creating this editor is that most WYSIWYG editors are not provided for free.
