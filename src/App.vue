@@ -190,62 +190,62 @@ import { ref, reactive, computed } from 'vue';
 import VueLibreEditor from './components/VueLibreEditor.vue';
 import { VueLibreEditorGenerator } from './lib/generate.js';
 
-export default {
-  components: {
-    VueLibreEditor
-  },
-  setup() {
-    const content = ref('<p>Hello, this is a <strong>WYSIWYG</strong> editor for <em>Vue 3</em>!</p>');
-    const selectedTheme = ref('light');
+  export default {
+    components: {
+      VueLibreEditor
+    },
+    setup() {
+      const content = ref('<p>Hello, this is a <strong>WYSIWYG</strong> editor for <em>Vue 3</em>!</p>');
+      const selectedTheme = ref('light');
 
-    const config = reactive({
-      size: {
-        width: '100%',
-        height: '800px',n
-        // minWidth: '300px',
-        // maxWidth: '100%',
-        // minHeight: '300px',
-        // maxHeight: '600px'
-      },
-      font: {
-        family: 'Arial, sans-serif',
-        size: '16px'
-      },
-      theme: 'light'
-    });
+      const config = reactive({
+                                size: {
+                                  width: '100%',
+                                  height: '800px',
+                                  // minWidth: '300px',
+                                  // maxWidth: '100%',
+                                  // minHeight: '300px',
+                                  // maxHeight: '600px'
+                                },
+                                font: {
+                                  family: 'Arial, sans-serif',
+                                  size: '16px'
+                                },
+                                theme: 'light'
+                              });
 
-    const updateTheme = () => {
-      if (selectedTheme.value === 'none') {
-        // Initialize custom theme if not already set
-        if (typeof config.theme !== 'object') {
-          config.theme = {
-            headerBgColor: '#f3f4f6',
-            headerFgColor: '#111827',
-            contentBgColor: '#ffffff',
-            contentFgColor: '#111827',
-            edgeColor: '#d1d5db',
-            activeButtonBg: '#e5e7eb',
-            activeButtonFg: '#2563eb'
-          };
+      const updateTheme = () => {
+        if (selectedTheme.value === 'none') {
+          // Initialize custom theme if not already set
+          if (typeof config.theme !== 'object') {
+            config.theme = {
+              headerBgColor: '#f3f4f6',
+              headerFgColor: '#111827',
+              contentBgColor: '#ffffff',
+              contentFgColor: '#111827',
+              edgeColor: '#d1d5db',
+              activeButtonBg: '#e5e7eb',
+              activeButtonFg: '#2563eb'
+            };
+          }
+        } else {
+          // Set predefined theme
+          config.theme = selectedTheme.value;
         }
-      } else {
-        // Set predefined theme
-        config.theme = selectedTheme.value;
-      }
-    };
+      };
 
-    // Computed property that transforms the content using VueLibreEditorGenerator
-    const formattedContent = computed(() => {
-      return VueLibreEditorGenerator(content.value);
-    });
+      // Computed property that transforms the content using VueLibreEditorGenerator
+      const formattedContent = computed(() => {
+        return VueLibreEditorGenerator(content.value);
+      });
 
-    return {
-      content,
-      formattedContent,
-      config,
-      selectedTheme,
-      updateTheme
-    };
-  }
+      return {
+        content,
+        formattedContent,
+        config,
+        selectedTheme,
+        updateTheme
+      };
+    }
 };
 </script>

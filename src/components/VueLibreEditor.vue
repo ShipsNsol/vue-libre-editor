@@ -1,11 +1,11 @@
 <template>
-  <div 
-    class="vue-libre-editor wysiwyg-editor border rounded-md"
+  <div
+    class="vue-libre-editor border rounded-md"
     :class="editorThemeClass"
     :style="editorContainerStyle"
   >
-    <EditorToolbar 
-      :editor="editorRef" 
+    <EditorToolbar
+      :editor="editorRef"
       @execute-command="executeCommand"
       @insert-image="showImageDialog = true"
       @insert-table="showTableDialog = true"
@@ -18,7 +18,7 @@
       @click="handleToolbarClick"
     />
 
-    <div 
+    <div
       ref="editorRef"
       class="editor-content p-4 focus:outline-none"
       contenteditable="true"
@@ -34,7 +34,7 @@
 
     <!-- Image Dialog -->
     <div v-if="showImageDialog" class="fixed inset-0 z-50 flex items-center justify-center">
-      <ImageDialog 
+      <ImageDialog
         @close="showImageDialog = false"
         @insert="insertImage"
         :theme="computedTheme"
@@ -89,7 +89,6 @@ import TableEditDialog from './editor/TableEditDialog.vue';
 import CellColorDialog from './editor/CellColorDialog.vue';
 import LinkDialog from './editor/LinkDialog.vue';
 
-
 export default {
   name: 'VueLibreEditor',
   components: {
@@ -127,12 +126,15 @@ export default {
     let isUpdatingContent = false;
     let resizingTable = null;
     let startX = 0;
+    let startY = 0;
     let startWidth = 0;
+    let startHeight = 0;
+    let tableWidth = 0;
+    let tableHeight = 0;
     let currentCol = null;
     let nextCol = null;
     let colIndex = 0;
-    let tableWidth = 0;
-    let tableHeight = 0;
+    let resizingRow = null;
     let resizingCell = null;
 
     // Default theme configurations
@@ -206,20 +208,20 @@ export default {
 
       // Width settings
       if (sizeConfig.width) {
-        styles.width = typeof sizeConfig.width === 'number' 
-          ? `${sizeConfig.width}px` 
+        styles.width = typeof sizeConfig.width === 'number'
+          ? `${sizeConfig.width}px`
           : sizeConfig.width;
       }
 
       if (sizeConfig.minWidth) {
-        styles.minWidth = typeof sizeConfig.minWidth === 'number' 
-          ? `${sizeConfig.minWidth}px` 
+        styles.minWidth = typeof sizeConfig.minWidth === 'number'
+          ? `${sizeConfig.minWidth}px`
           : sizeConfig.minWidth;
       }
 
       if (sizeConfig.maxWidth) {
-        styles.maxWidth = typeof sizeConfig.maxWidth === 'number' 
-          ? `${sizeConfig.maxWidth}px` 
+        styles.maxWidth = typeof sizeConfig.maxWidth === 'number'
+          ? `${sizeConfig.maxWidth}px`
           : sizeConfig.maxWidth;
       }
 
@@ -237,22 +239,22 @@ export default {
 
       // Height settings
       if (sizeConfig.height) {
-        styles.height = typeof sizeConfig.height === 'number' 
-          ? `${sizeConfig.height}px` 
+        styles.height = typeof sizeConfig.height === 'number'
+          ? `${sizeConfig.height}px`
           : sizeConfig.height;
       }
 
       if (sizeConfig.minHeight) {
-        styles.minHeight = typeof sizeConfig.minHeight === 'number' 
-          ? `${sizeConfig.minHeight}px` 
+        styles.minHeight = typeof sizeConfig.minHeight === 'number'
+          ? `${sizeConfig.minHeight}px`
           : sizeConfig.minHeight;
       } else {
         styles.minHeight = '200px'; // Default min height
       }
 
       if (sizeConfig.maxHeight) {
-        styles.maxHeight = typeof sizeConfig.maxHeight === 'number' 
-          ? `${sizeConfig.maxHeight}px` 
+        styles.maxHeight = typeof sizeConfig.maxHeight === 'number'
+          ? `${sizeConfig.maxHeight}px`
           : sizeConfig.maxHeight;
         styles.overflowY = 'auto';
       }
@@ -263,8 +265,8 @@ export default {
       }
 
       if (fontConfig.size) {
-        styles.fontSize = typeof fontConfig.size === 'number' 
-          ? `${fontConfig.size}px` 
+        styles.fontSize = typeof fontConfig.size === 'number'
+          ? `${fontConfig.size}px`
           : fontConfig.size;
       }
 
@@ -308,10 +310,10 @@ export default {
 
       while (currentNode && currentNode !== editorRef.value) {
         // Check if we're inside a resizer element
-        if (currentNode.classList && 
-            (currentNode.classList.contains('column-resizer') || 
-             currentNode.classList.contains('row-resizer') ||
-             currentNode.classList.contains('resizer-container'))) {
+        if (currentNode.classList &&
+          (currentNode.classList.contains('column-resizer') ||
+            currentNode.classList.contains('row-resizer') ||
+            currentNode.classList.contains('resizer-container'))) {
           resizerElement = currentNode;
         }
 
@@ -546,12 +548,12 @@ export default {
           const cells = row.querySelectorAll('th, td');
           cells.forEach(cell => {
             allCells.push({
-              cell,
-              width: cell.offsetWidth,
-              height: cell.offsetHeight,
-              widthRatio: cell.offsetWidth / startWidth,
-              heightRatio: cell.offsetHeight / startHeight
-            });
+                            cell,
+                            width: cell.offsetWidth,
+                            height: cell.offsetHeight,
+                            widthRatio: cell.offsetWidth / startWidth,
+                            heightRatio: cell.offsetHeight / startHeight
+                          });
           });
         });
 
@@ -782,9 +784,6 @@ export default {
     };
 
     // Variables for row resizing
-    let resizingRow = null;
-    let startY = 0;
-    let startHeight = 0;
     let rowIndex = 0;
 
     // Function to start row resizing
@@ -893,11 +892,12 @@ export default {
       nextCol = null;
     };
 
+
     // Initialize editor content
     onMounted(() => {
       if (editorRef.value) {
         // Set initial content
-        editorRef.value.innerHTML = props.modelValue || '';
+        editorRef.value.innerHTML = unwrapContentFromClass(props.modelValue || '');
 
         // Set placeholder if content is empty
         if (!props.modelValue && props.placeholder) {
@@ -1023,7 +1023,8 @@ export default {
       if (!editorRef.value) return;
 
       isUpdatingContent = true;
-      // Emit the raw content without wrapping
+      // Wrap the content with vue-libre-editor-content class before emitting
+      // const wrappedContent = `<div class="vue-libre-editor-content">${editorRef.value.innerHTML}</div>`;
       emit('update:modelValue', editorRef.value.innerHTML);
 
       // Reset flag after a short delay
@@ -1038,7 +1039,8 @@ export default {
     const handleBlur = () => {
       // Update content on blur
       if (editorRef.value) {
-        // Emit the raw content without wrapping
+        // Wrap the content with vue-libre-editor-content class before emitting
+        // const wrappedContent = `<div class="vue-libre-editor-content">${editorRef.value.innerHTML}</div>`;
         emit('update:modelValue', editorRef.value.innerHTML);
       }
     };
@@ -1112,10 +1114,10 @@ export default {
             }
 
             // Also check if we're inside a resizer element
-            if (currentNode.classList && 
-                (currentNode.classList.contains('column-resizer') || 
-                 currentNode.classList.contains('row-resizer') ||
-                 currentNode.classList.contains('resizer-container'))) {
+            if (currentNode.classList &&
+              (currentNode.classList.contains('column-resizer') ||
+                currentNode.classList.contains('row-resizer') ||
+                currentNode.classList.contains('resizer-container'))) {
               resizerElement = currentNode;
             }
 
@@ -1243,8 +1245,8 @@ export default {
                 newParagraph.innerHTML = '<br>';
 
                 // If the selection is at the end of the paragraph, just add a new paragraph after it
-                if (newRange.endOffset === 0 || 
-                    (newRange.endContainer.nodeType === 3 && newRange.endOffset === newRange.endContainer.length)) {
+                if (newRange.endOffset === 0 ||
+                  (newRange.endContainer.nodeType === 3 && newRange.endOffset === newRange.endContainer.length)) {
                   // Insert the new paragraph after the current one
                   if (currentParagraph.nextSibling) {
                     cellContentDiv.insertBefore(newParagraph, currentParagraph.nextSibling);
@@ -1538,20 +1540,20 @@ export default {
       }
     };
 
-    // Handle toolbar click to ensure tables remain resizable
-    const handleToolbarClick = () => {
-      // Make tables resizable again with a small delay to ensure DOM has updated
-      nextTick(() => {
-        // Use setTimeout to ensure DOM has fully updated
-        setTimeout(() => {
-          makeTablesResizable();
-          // Add another timeout to ensure table resizers are properly added
+      // Handle toolbar click to ensure tables remain resizable
+      const handleToolbarClick = () => {
+        // Make tables resizable again with a small delay to ensure DOM has updated
+        nextTick(() => {
+          // Use setTimeout to ensure DOM has fully updated
           setTimeout(() => {
             makeTablesResizable();
+            // Add another timeout to ensure table resizers are properly added
+            setTimeout(() => {
+              makeTablesResizable();
+            }, 200);
           }, 200);
-        }, 200);
-      });
-    };
+        });
+      };
 
 
     return {
@@ -1586,31 +1588,32 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+
 /* Styles for the editor component */
-.vue-libre-editor .editor-content {
+.editor-content {
   overflow-y: auto;
 }
 
-.vue-libre-editor .editor-content[data-placeholder]:empty:before {
+.editor-content[data-placeholder]:empty:before {
   content: attr(data-placeholder);
   color: #aaa;
   pointer-events: none;
 }
 
-.vue-libre-editor .editor-content:focus {
+.editor-content:focus {
   outline: none;
 }
 
 /* Table styles for the editor */
-.vue-libre-editor .editor-content table {
+.editor-content table {
   border-collapse: collapse;
   margin: 10px 0;
   position: relative;
 }
 
-.vue-libre-editor .editor-content th,
-.vue-libre-editor .editor-content td {
+.editor-content th,
+.editor-content td {
   border: 1px solid #ddd;
   padding: 8px;
   position: relative;
@@ -1618,12 +1621,12 @@ export default {
   min-height: 20px;
 }
 
-.vue-libre-editor .editor-content tr:hover {
+.editor-content tr:hover {
   background-color: #f5f5f5;
 }
 
 /* Column resizer styles */
-.vue-libre-editor .column-resizer {
+.column-resizer {
   position: absolute;
   top: 0;
   right: -3px;
@@ -1634,13 +1637,13 @@ export default {
   z-index: 1;
 }
 
-.vue-libre-editor .column-resizer:hover,
-.vue-libre-editor .column-resizer:active {
+.column-resizer:hover,
+.column-resizer:active {
   background-color: #2563eb;
 }
 
 /* Table resizer styles */
-.vue-libre-editor .table-resizer {
+.table-resizer {
   position: absolute;
   right: -5px;
   bottom: -5px;
@@ -1653,29 +1656,29 @@ export default {
 }
 
 /* When resizing is active */
-body.resizing {
+:global(body.resizing) {
   cursor: col-resize;
   user-select: none;
 }
 
 /* Dark theme adjustments for tables */
-.vue-libre-editor.editor-theme-dark .editor-content table td,
-.vue-libre-editor.editor-theme-dark .editor-content table th {
+:deep(.editor-theme-dark) .editor-content table td,
+:deep(.editor-theme-dark) .editor-content table th {
   border-color: #4b5563;
 }
 
-.vue-libre-editor.editor-theme-dark .editor-content table tr:hover {
+:deep(.editor-theme-dark) .editor-content table tr:hover {
   background-color: #374151;
 }
 
-.vue-libre-editor.editor-theme-dark .column-resizer:hover,
-.vue-libre-editor.editor-theme-dark .column-resizer:active,
-.vue-libre-editor.editor-theme-dark .table-resizer {
+:deep(.editor-theme-dark) .column-resizer:hover,
+:deep(.editor-theme-dark) .column-resizer:active,
+:deep(.editor-theme-dark) .table-resizer {
   background-color: #60a5fa;
 }
 
 /* Row resizer styles */
-.vue-libre-editor .row-resizer {
+.row-resizer {
   position: absolute;
   left: 0;
   bottom: -3px;
@@ -1686,33 +1689,33 @@ body.resizing {
   z-index: 1;
 }
 
-.vue-libre-editor .row-resizer:hover,
-.vue-libre-editor .row-resizer:active {
+.row-resizer:hover,
+.row-resizer:active {
   background-color: #2563eb;
 }
 
-.vue-libre-editor.editor-theme-dark .row-resizer:hover,
-.vue-libre-editor.editor-theme-dark .row-resizer:active {
+:deep(.editor-theme-dark) .row-resizer:hover,
+:deep(.editor-theme-dark) .row-resizer:active {
   background-color: #60a5fa;
 }
 
 /* Cell selection styles */
-.vue-libre-editor .cell-selected {
-  background-color: rgba(37, 99, 235, 0.2) !important;
-  outline: 2px solid #2563eb !important;
+.cell-selected {
+  background-color: rgba(37, 99, 235, 0.2) ;
+  outline: 2px solid #2563eb ;
   position: relative;
   z-index: 1;
 }
 
 /* Multi-selected cells have a stronger highlight */
-.vue-libre-editor .cell-selected[data-multi-selected="true"] {
-  background-color: rgba(37, 99, 235, 0.3) !important;
-  outline: 3px solid #2563eb !important;
+.cell-selected[data-multi-selected="true"] {
+  background-color: rgba(37, 99, 235, 0.3) ;
+  outline: 3px solid #2563eb ;
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.5);
 }
 
 /* Add a label to indicate multi-selection mode */
-.vue-libre-editor .cell-selected[data-multi-selected="true"]::after {
+.cell-selected[data-multi-selected="true"]::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -1723,31 +1726,107 @@ body.resizing {
   border-radius: 50%;
 }
 
-.vue-libre-editor.editor-theme-dark .cell-selected {
-  background-color: rgba(96, 165, 250, 0.2) !important;
-  outline: 2px solid #60a5fa !important;
+:deep(.editor-theme-dark) .cell-selected {
+  background-color: rgba(96, 165, 250, 0.2) ;
+  outline: 2px solid #60a5fa ;
 }
 
-.vue-libre-editor.editor-theme-dark .cell-selected[data-multi-selected="true"] {
-  background-color: rgba(96, 165, 250, 0.3) !important;
-  outline: 3px solid #60a5fa !important;
+:deep(.editor-theme-dark) .cell-selected[data-multi-selected="true"] {
+  background-color: rgba(96, 165, 250, 0.3) ;
+  outline: 3px solid #60a5fa ;
   box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.5);
 }
 
-.vue-libre-editor.editor-theme-dark .cell-selected[data-multi-selected="true"]::after {
+:deep(.editor-theme-dark) .cell-selected[data-multi-selected="true"]::after {
   background-color: #60a5fa;
 }
 
 /* Styles for content when the module is not imported */
 /* These styles can be exported and used separately */
-.vue-libre-editor-content table {
+:global(.vue-libre-editor-content table) {
   border-collapse: collapse;
   margin: 10px 0;
   position: relative;
+  border-spacing: 0;
+  width: auto;
+  height: auto;
+  table-layout: auto;
+  caption-side: top;
+  empty-cells: show;
+  border: none;
+  border-style: none;
+  border-width: 0;
+  border-color: currentColor;
+  background-color: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  vertical-align: middle;
 }
 
-.vue-libre-editor-content table th,
-.vue-libre-editor-content table td {
+:global(.vue-libre-editor-content thead) {
+  vertical-align: middle;
+  border-color: inherit;
+  display: table-header-group;
+}
+
+:global(.vue-libre-editor-content tbody) {
+  vertical-align: middle;
+  border-color: inherit;
+  display: table-row-group;
+}
+
+:global(.vue-libre-editor-content tr) {
+  vertical-align: inherit;
+  border-color: inherit;
+  display: table-row;
+}
+
+:global(.vue-libre-editor-content a) {
+  color: #0000EE;
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+:global(.vue-libre-editor-content img) {
+  border-style: none;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+:global(.vue-libre-editor-content p) {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  display: block;
+}
+
+:global(.vue-libre-editor-content button) {
+  appearance: button;
+  text-transform: none;
+  overflow: visible;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+}
+
+:global(.vue-libre-editor-content span) {
+  display: inline;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+
+:global(.vue-libre-editor-content table th),
+:global(.vue-libre-editor-content table td) {
   border: 1px solid #ddd;
   padding: 8px;
   position: relative;
@@ -1758,11 +1837,11 @@ body.resizing {
   white-space: normal;
 }
 
-.vue-libre-editor-content table tr:hover {
+:global(.vue-libre-editor-content table tr:hover) {
   background-color: #f5f5f5;
 }
 
-.vue-libre-editor-content .cell-content {
+:global(.vue-libre-editor-content .cell-content) {
   /* width is now set dynamically by JavaScript */
   height: 100%;
   position: relative;
@@ -1773,12 +1852,12 @@ body.resizing {
 }
 
 /* Dark theme adjustments for content */
-.vue-libre-editor-content.dark-theme table td,
-.vue-libre-editor-content.dark-theme table th {
+:global(.vue-libre-editor-content.dark-theme table td),
+:global(.vue-libre-editor-content.dark-theme table th) {
   border-color: #4b5563;
 }
 
-.vue-libre-editor-content.dark-theme table tr:hover {
+:global(.vue-libre-editor-content.dark-theme table tr:hover) {
   background-color: #374151;
 }
 </style>
