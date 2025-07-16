@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="editor-toolbar flex flex-wrap gap-1 p-2 rounded-t-md"
+    class="editor-toolbar flex flex-wrap gap-1 p-2"
     :style="toolbarStyle"
   >
     <!-- Font family -->
@@ -712,6 +712,16 @@ export default {
 /* Add some additional styles for better button feedback */
 button {
   transition: all 0.15s ease;
+  appearance: button;
+  text-transform: none;
+  overflow: visible;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
 }
 
 button:focus {

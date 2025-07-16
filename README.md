@@ -255,6 +255,7 @@ export default {
 | sanitize | Boolean | true | Whether to sanitize HTML input |
 | allowedTags | Array | [...] | Array of allowed HTML tags |
 | allowedAttributes | Object | {...} | Object of allowed HTML attributes |
+| cssVars | Object | {} | Custom CSS variables for theming (see CSS Variables section) |
 
 ## Events
 
@@ -266,10 +267,77 @@ export default {
 | focus | editor | Emitted when the editor gains focus |
 | ready | editor | Emitted when the editor is ready |
 
+## CSS Variables Customization
+
+You can customize the CSS variables used in the editor by using the `cssVars` prop. This allows you to change the spacing, font sizes, and other styling aspects of the editor.
+
+### Available CSS Variables
+
+| Variable | Default Value | Description |
+|----------|---------------|-------------|
+| --spacing | .25rem | Controls spacing throughout the editor |
+| --container-md | 28rem | Controls medium container width |
+| --text-sm | .875rem | Controls small text size |
+| --text-sm--line-height | calc(1.25 / .875) | Controls small text line height |
+| --text-lg | 1.125rem | Controls large text size |
+| --text-lg--line-height | calc(1.75 / 1.125) | Controls large text line height |
+| --font-weight-medium | 500 | Controls medium font weight |
+| --font-mono | ui-monospace, SFMono-Regular, etc. | Controls monospace font family |
+| --default-mono-font-family | var(--font-mono) | Controls default monospace font family |
+| --default-transition-duration | .15s | Controls default transition duration |
+| --default-transition-timing-function | cubic-bezier(.4, 0, .2, 1) | Controls default transition timing function |
+
+### Example Usage
+
+```vue
+<template>
+  <VueLibreEditor
+    v-model="content"
+    :config="config"
+    :cssVars="customCssVars"
+  />
+</template>
+
+<script>
+import { ref, reactive } from 'vue';
+import { VueLibreEditor } from 'vue-libre-editor'
+import 'vue-libre-editor/dist/vue-libre-editor.css'
+
+export default {
+  components: {
+    VueLibreEditor
+  },
+  setup() {
+    const content = ref('<p>Hello, world!</p>');
+    
+    const config = reactive({
+      // Your regular config here
+    });
+    
+    // Custom CSS variables
+    const customCssVars = {
+      '--spacing': '4rem',
+      '--container-md': '44.8rem',
+      '--text-sm': '1.4rem',
+      '--text-sm--line-height': 'calc(2 / 1.4)',
+      '--text-lg': '1.8rem',
+      '--text-lg--line-height': 'calc(2.8 / 1.8)'
+    };
+    
+    return {
+      content,
+      config,
+      customCssVars
+    };
+  }
+}
+</script>
+```
+
 ## License
 
 MIT
 
 ## Author
 
-ShipsNsol, geon0430
+ShipsNsol

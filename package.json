@@ -1,20 +1,40 @@
 {
   "name": "vue-libre-editor",
-  "private": true,
   "version": "1.0.12",
+  "description": "A free WYSIWYG editor for Vue.js",
+  "author": "ShipsNsol",
+  "license": "MIT",
   "type": "module",
+  "main": "dist/vue-libre-editor.umd.js",
+  "module": "dist/vue-libre-editor.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-libre-editor.es.js",
+      "require": "./dist/vue-libre-editor.umd.js"
+    },
+    "./dist/vue-libre-editor.css": "./dist/vue-libre-editor.css",
+    "./dist/style.css": "./dist/vue-libre-editor.css",
+    "./lib/generate": "./src/lib/generate.js"
+  },
+  "files": [
+    "dist",
+    "src/lib"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.4",
+    "tailwindcss": "^4.0.0"
   },
   "dependencies": {
     "vue": "^3.3.4",
     "clsx": "^2.1.1",
     "class-variance-authority": "^0.7.1",
     "lucide-vue-next": "^0.511.0",
-    "radix-vue": "^1.9.17",
-    "vue-router": "^4.3.1"
+    "radix-vue": "^1.9.17"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",
@@ -23,5 +43,20 @@
     "tailwindcss": "^4.0.0",
     "@tailwindcss/vite": "^4.0.0",
     "tailwindcss-animate": "^1.0.7"
-  }
+  },
+  "keywords": [
+    "vue",
+    "wysiwyg",
+    "editor",
+    "rich-text",
+    "html-editor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ShipsNsol/vue-libre-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/ShipsNsol/vue-libre-editor/issues"
+  },
+  "homepage": "https://github.com/ShipsNsol/vue-libre-editor"
 }

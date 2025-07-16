@@ -37,4 +37,4 @@ coverage
 .tmp
 .cache
 
-pacakge-lock.json
+package-lock.json

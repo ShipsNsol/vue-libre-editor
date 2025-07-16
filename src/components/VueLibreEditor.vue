@@ -1,6 +1,6 @@
 <template>
   <div
-    class="vue-libre-editor border rounded-md"
+    class="vue-libre-editor border"
     :class="editorThemeClass"
     :style="editorContainerStyle"
   >
@@ -89,6 +89,7 @@ import TableEditDialog from './editor/TableEditDialog.vue';
 import CellColorDialog from './editor/CellColorDialog.vue';
 import LinkDialog from './editor/LinkDialog.vue';
 
+
 export default {
   name: 'VueLibreEditor',
   components: {
@@ -109,6 +110,35 @@ export default {
       default: 'Type something...'
     },
     config: {
+      type: Object,
+      default: () => ({})
+    },
+    /**
+     * Custom CSS variables for theming
+     * You can customize the following variables:
+     * --spacing: Controls spacing (default: .25rem)
+     * --container-md: Controls medium container width (default: 28rem)
+     * --text-sm: Controls small text size (default: .875rem)
+     * --text-sm--line-height: Controls small text line height (default: calc(1.25 / .875))
+     * --text-lg: Controls large text size (default: 1.125rem)
+     * --text-lg--line-height: Controls large text line height (default: calc(1.75 / 1.125))
+     * --font-weight-medium: Controls medium font weight (default: 500)
+     * --font-mono: Controls monospace font family
+     * --default-mono-font-family: Controls default monospace font family
+     * --default-transition-duration: Controls default transition duration
+     * --default-transition-timing-function: Controls default transition timing function
+     * 
+     * Example usage:
+     * :cssVars="{
+     *   '--spacing': '4rem',
+     *   '--container-md': '44.8rem',
+     *   '--text-sm': '1.4rem',
+     *   '--text-sm--line-height': 'calc(2 / 1.4)',
+     *   '--text-lg': '1.8rem',
+     *   '--text-lg--line-height': 'calc(2.8 / 1.8)'
+     * }"
+     */
+    cssVars: {
       type: Object,
       default: () => ({})
     }
@@ -136,6 +166,29 @@ export default {
     let colIndex = 0;
     let resizingRow = null;
     let resizingCell = null;
+    
+    // Computed property for custom CSS variables
+    const customCssVars = computed(() => {
+      const vars = props.cssVars;
+      
+      // Default values for the CSS variables
+      const defaultVars = {
+        '--font-mono': 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        '--spacing': '4rem',
+        '--container-md': '44.8rem',
+        '--text-sm': '1.4rem',
+        '--text-sm--line-height': 'calc(2 / 1.4)',
+        '--text-lg': '1.8rem',
+        '--text-lg--line-height': 'calc(2.8 / 1.8)',
+        '--font-weight-medium': '500',
+        '--default-transition-duration': '.15s',
+        '--default-transition-timing-function': 'cubic-bezier(.4, 0, .2, 1)',
+        '--default-mono-font-family': 'var(--font-mono)'
+      };
+      
+      // Merge default values with user-provided values
+      return { ...defaultVars, ...vars };
+    });
 
     // Default theme configurations
     const themeConfigs = {
@@ -225,7 +278,8 @@ export default {
           : sizeConfig.maxWidth;
       }
 
-      return styles;
+      // Add custom CSS variables
+      return { ...styles, ...customCssVars.value };
     });
 
     const editorContentStyle = computed(() => {
@@ -1540,20 +1594,20 @@ export default {
       }
     };
 
-      // Handle toolbar click to ensure tables remain resizable
-      const handleToolbarClick = () => {
-        // Make tables resizable again with a small delay to ensure DOM has updated
-        nextTick(() => {
-          // Use setTimeout to ensure DOM has fully updated
+    // Handle toolbar click to ensure tables remain resizable
+    const handleToolbarClick = () => {
+      // Make tables resizable again with a small delay to ensure DOM has updated
+      nextTick(() => {
+        // Use setTimeout to ensure DOM has fully updated
+        setTimeout(() => {
+          makeTablesResizable();
+          // Add another timeout to ensure table resizers are properly added
           setTimeout(() => {
             makeTablesResizable();
-            // Add another timeout to ensure table resizers are properly added
-            setTimeout(() => {
-              makeTablesResizable();
-            }, 200);
           }, 200);
-        });
-      };
+        }, 200);
+      });
+    };
 
 
     return {
@@ -1588,32 +1642,35 @@ export default {
 };
 </script>
 
+<style>
+/* 글로벌 - scoped 없음 */
+</style>
+
 <style scoped>
 
-/* Styles for the editor component */
-.editor-content {
+.vue-libre-editor .editor-content {
   overflow-y: auto;
 }
 
-.editor-content[data-placeholder]:empty:before {
+.vue-libre-editor .editor-content[data-placeholder]:empty:before {
   content: attr(data-placeholder);
   color: #aaa;
   pointer-events: none;
 }
 
-.editor-content:focus {
+.vue-libre-editor .editor-content:focus {
   outline: none;
 }
 
 /* Table styles for the editor */
-.editor-content table {
+.vue-libre-editor .editor-content table {
   border-collapse: collapse;
   margin: 10px 0;
   position: relative;
 }
 
-.editor-content th,
-.editor-content td {
+.vue-libre-editor .editor-content th,
+.vue-libre-editor .editor-content td {
   border: 1px solid #ddd;
   padding: 8px;
   position: relative;
@@ -1621,12 +1678,12 @@ export default {
   min-height: 20px;
 }
 
-.editor-content tr:hover {
+.vue-libre-editor .editor-content tr:hover {
   background-color: #f5f5f5;
 }
 
 /* Column resizer styles */
-.column-resizer {
+.vue-libre-editor .column-resizer {
   position: absolute;
   top: 0;
   right: -3px;
@@ -1637,13 +1694,13 @@ export default {
   z-index: 1;
 }
 
-.column-resizer:hover,
-.column-resizer:active {
+.vue-libre-editor .column-resizer:hover,
+.vue-libre-editor .column-resizer:active {
   background-color: #2563eb;
 }
 
 /* Table resizer styles */
-.table-resizer {
+.vue-libre-editor .table-resizer {
   position: absolute;
   right: -5px;
   bottom: -5px;
@@ -1656,29 +1713,29 @@ export default {
 }
 
 /* When resizing is active */
-:global(body.resizing) {
+.vue-libre-editor body.resizing {
   cursor: col-resize;
   user-select: none;
 }
 
 /* Dark theme adjustments for tables */
-:deep(.editor-theme-dark) .editor-content table td,
-:deep(.editor-theme-dark) .editor-content table th {
+:deep(.editor-theme-dark) .vue-libre-editor .editor-content table td,
+:deep(.editor-theme-dark) .vue-libre-editor .editor-content table th {
   border-color: #4b5563;
 }
 
-:deep(.editor-theme-dark) .editor-content table tr:hover {
+:deep(.editor-theme-dark) .vue-libre-editor .editor-content table tr:hover {
   background-color: #374151;
 }
 
-:deep(.editor-theme-dark) .column-resizer:hover,
-:deep(.editor-theme-dark) .column-resizer:active,
-:deep(.editor-theme-dark) .table-resizer {
+:deep(.editor-theme-dark) .vue-libre-editor .column-resizer:hover,
+:deep(.editor-theme-dark) .vue-libre-editor .column-resizer:active,
+:deep(.editor-theme-dark) .vue-libre-editor .table-resizer {
   background-color: #60a5fa;
 }
 
 /* Row resizer styles */
-.row-resizer {
+.vue-libre-editor .row-resizer {
   position: absolute;
   left: 0;
   bottom: -3px;
@@ -1689,18 +1746,18 @@ export default {
   z-index: 1;
 }
 
-.row-resizer:hover,
-.row-resizer:active {
+.vue-libre-editor .row-resizer:hover,
+.vue-libre-editor .row-resizer:active {
   background-color: #2563eb;
 }
 
-:deep(.editor-theme-dark) .row-resizer:hover,
-:deep(.editor-theme-dark) .row-resizer:active {
+:deep(.editor-theme-dark) .vue-libre-editor .row-resizer:hover,
+:deep(.editor-theme-dark) .vue-libre-editor .row-resizer:active {
   background-color: #60a5fa;
 }
 
 /* Cell selection styles */
-.cell-selected {
+.vue-libre-editor .cell-selected {
   background-color: rgba(37, 99, 235, 0.2) ;
   outline: 2px solid #2563eb ;
   position: relative;
@@ -1708,14 +1765,14 @@ export default {
 }
 
 /* Multi-selected cells have a stronger highlight */
-.cell-selected[data-multi-selected="true"] {
+.vue-libre-editor .cell-selected[data-multi-selected="true"] {
   background-color: rgba(37, 99, 235, 0.3) ;
   outline: 3px solid #2563eb ;
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.5);
 }
 
 /* Add a label to indicate multi-selection mode */
-.cell-selected[data-multi-selected="true"]::after {
+.vue-libre-editor .cell-selected[data-multi-selected="true"]::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -1726,24 +1783,24 @@ export default {
   border-radius: 50%;
 }
 
-:deep(.editor-theme-dark) .cell-selected {
+:deep(.editor-theme-dark) .vue-libre-editor .cell-selected {
   background-color: rgba(96, 165, 250, 0.2) ;
   outline: 2px solid #60a5fa ;
 }
 
-:deep(.editor-theme-dark) .cell-selected[data-multi-selected="true"] {
+:deep(.editor-theme-dark) .vue-libre-editor .cell-selected[data-multi-selected="true"] {
   background-color: rgba(96, 165, 250, 0.3) ;
   outline: 3px solid #60a5fa ;
   box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.5);
 }
 
-:deep(.editor-theme-dark) .cell-selected[data-multi-selected="true"]::after {
+:deep(.editor-theme-dark) .vue-libre-editor .cell-selected[data-multi-selected="true"]::after {
   background-color: #60a5fa;
 }
 
 /* Styles for content when the module is not imported */
 /* These styles can be exported and used separately */
-:global(.vue-libre-editor-content table) {
+.vue-libre-editor-content table {
   border-collapse: collapse;
   margin: 10px 0;
   position: relative;
@@ -1765,45 +1822,45 @@ export default {
   vertical-align: middle;
 }
 
-:global(.vue-libre-editor-content thead) {
+.vue-libre-editor .vue-libre-editor-content thead {
   vertical-align: middle;
   border-color: inherit;
   display: table-header-group;
 }
 
-:global(.vue-libre-editor-content tbody) {
+.vue-libre-editor .vue-libre-editor-content tbody {
   vertical-align: middle;
   border-color: inherit;
   display: table-row-group;
 }
 
-:global(.vue-libre-editor-content tr) {
+.vue-libre-editor .vue-libre-editor-content tr {
   vertical-align: inherit;
   border-color: inherit;
   display: table-row;
 }
 
-:global(.vue-libre-editor-content a) {
+.vue-libre-editor .vue-libre-editor-content a {
   color: #0000EE;
   text-decoration: underline;
   cursor: pointer;
   background-color: transparent;
 }
 
-:global(.vue-libre-editor-content img) {
+.vue-libre-editor .vue-libre-editor-content img {
   border-style: none;
   max-width: 100%;
   height: auto;
   vertical-align: middle;
 }
 
-:global(.vue-libre-editor-content p) {
+.vue-libre-editor .vue-libre-editor-content p {
   margin-top: 1em;
   margin-bottom: 1em;
   display: block;
 }
 
-:global(.vue-libre-editor-content button) {
+.vue-libre-editor .vue-libre-editor-content button {
   appearance: button;
   text-transform: none;
   overflow: visible;
@@ -1817,7 +1874,7 @@ export default {
   cursor: pointer;
 }
 
-:global(.vue-libre-editor-content span) {
+.vue-libre-editor .vue-libre-editor-content span {
   display: inline;
   font-family: inherit;
   font-size: inherit;
@@ -1825,8 +1882,68 @@ export default {
   line-height: inherit;
 }
 
-:global(.vue-libre-editor-content table th),
-:global(.vue-libre-editor-content table td) {
+.vue-libre-editor .vue-libre-editor-content thead {
+  vertical-align: middle;
+  border-color: inherit;
+  display: table-header-group;
+}
+
+.vue-libre-editor .vue-libre-editor-content tbody {
+  vertical-align: middle;
+  border-color: inherit;
+  display: table-row-group;
+}
+
+.vue-libre-editor .vue-libre-editor-content tr {
+  vertical-align: inherit;
+  border-color: inherit;
+  display: table-row;
+}
+
+.vue-libre-editor .vue-libre-editor-content a {
+  color: #0000EE;
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.vue-libre-editor .vue-libre-editor-content img  {
+  border-style: none;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.vue-libre-editor .vue-libre-editor-content p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  display: block;
+}
+
+.vue-libre-editor .vue-libre-editor-content button {
+  appearance: button;
+  text-transform: none;
+  overflow: visible;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+}
+
+.vue-libre-editor .vue-libre-editor-content span {
+  display: inline;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+
+.vue-libre-editor .vue-libre-editor-content table th,
+.vue-libre-editor .vue-libre-editor-content table td {
   border: 1px solid #ddd;
   padding: 8px;
   position: relative;
@@ -1837,11 +1954,11 @@ export default {
   white-space: normal;
 }
 
-:global(.vue-libre-editor-content table tr:hover) {
+.vue-libre-editor .vue-libre-editor-content table tr:hover {
   background-color: #f5f5f5;
 }
 
-:global(.vue-libre-editor-content .cell-content) {
+.vue-libre-editor .vue-libre-editor-content .cell-content {
   /* width is now set dynamically by JavaScript */
   height: 100%;
   position: relative;
@@ -1852,12 +1969,12 @@ export default {
 }
 
 /* Dark theme adjustments for content */
-:global(.vue-libre-editor-content.dark-theme table td),
-:global(.vue-libre-editor-content.dark-theme table th) {
+.vue-libre-editor .vue-libre-editor-content.dark-theme table td,
+.vue-libre-editor .vue-libre-editor-content.dark-theme table th {
   border-color: #4b5563;
 }
 
-:global(.vue-libre-editor-content.dark-theme table tr:hover) {
+.vue-libre-editor .vue-libre-editor-content.dark-theme table tr:hover {
   background-color: #374151;
 }
 </style>

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "../../../Users/COMER-4/AppData/Local/Temp/BNZ.68514f268462de",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

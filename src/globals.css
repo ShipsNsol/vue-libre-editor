@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
+@layer base, components, utilities, custom;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -47,12 +49,3 @@
     --ring: 216 34% 17%;
   }
 }
-
-/*!*@layer base {*!*/
-/*!*  * {*!*/
-/*!*    @apply border-border;*!*/
-/*!*  }*!*/
-/*!*  body {*!*/
-/*!*    @apply font-sans antialiased bg-background text-foreground;*!*/
-/*!*  }*!*/
-/*!*}*!*/
