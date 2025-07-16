@@ -116,19 +116,19 @@ export default {
     /**
      * Custom CSS variables for theming
      * You can customize the following variables:
-     * --spacing: Controls spacing (default: .25rem)
-     * --container-md: Controls medium container width (default: 28rem)
-     * --text-sm: Controls small text size (default: .875rem)
-     * --text-sm--line-height: Controls small text line height (default: calc(1.25 / .875))
-     * --text-lg: Controls large text size (default: 1.125rem)
-     * --text-lg--line-height: Controls large text line height (default: calc(1.75 / 1.125))
+     * --spacing: Controls spacing (default: 4rem)
+     * --container-md: Controls medium container width (default: 44.8rem)
+     * --text-sm: Controls small text size (default: 1.4rem)
+     * --text-sm--line-height: Controls small text line height (default: calc(2 / 1.4))
+     * --text-lg: Controls large text size (default: 1.8rem)
+     * --text-lg--line-height: Controls large text line height (default: calc(2.8 / 1.8))
      * --font-weight-medium: Controls medium font weight (default: 500)
      * --font-mono: Controls monospace font family
      * --default-mono-font-family: Controls default monospace font family
      * --default-transition-duration: Controls default transition duration
      * --default-transition-timing-function: Controls default transition timing function
      * 
-     * Example usage:
+     * Example usage for large theme (default):
      * :cssVars="{
      *   '--spacing': '4rem',
      *   '--container-md': '44.8rem',
@@ -136,6 +136,16 @@ export default {
      *   '--text-sm--line-height': 'calc(2 / 1.4)',
      *   '--text-lg': '1.8rem',
      *   '--text-lg--line-height': 'calc(2.8 / 1.8)'
+     * }"
+     * 
+     * Example usage for small theme:
+     * :cssVars="{
+     *   '--spacing': '.25rem',
+     *   '--container-md': '28rem',
+     *   '--text-sm': '.875rem',
+     *   '--text-sm--line-height': 'calc(1.25 / .875)',
+     *   '--text-lg': '1.125rem',
+     *   '--text-lg--line-height': 'calc(1.75 / 1.125)'
      * }"
      */
     cssVars: {
@@ -174,16 +184,15 @@ export default {
       // Default values for the CSS variables
       const defaultVars = {
         '--font-mono': 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-        '--spacing': '4rem',
-        '--container-md': '44.8rem',
-        '--text-sm': '1.4rem',
-        '--text-sm--line-height': 'calc(2 / 1.4)',
-        '--text-lg': '1.8rem',
-        '--text-lg--line-height': 'calc(2.8 / 1.8)',
+        '--spacing': '.25rem',
+        '--container-md': '28rem',
+        '--text-sm': '.875rem',
+        '--text-sm--line-height': 'calc(1.25 / .875)',
+        '--text-lg': '1.125rem',
+        '--text-lg--line-height': 'calc(1.75 / 1.125)',
         '--font-weight-medium': '500',
         '--default-transition-duration': '.15s',
         '--default-transition-timing-function': 'cubic-bezier(.4, 0, .2, 1)',
-        '--default-mono-font-family': 'var(--font-mono)'
       };
       
       // Merge default values with user-provided values
