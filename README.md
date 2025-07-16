@@ -273,19 +273,19 @@ You can customize the CSS variables used in the editor by using the `cssVars` pr
 
 ### Available CSS Variables
 
-| Variable | Default Value | Description |
-|----------|---------------|-------------|
-| --spacing | 4rem | Controls spacing throughout the editor |
-| --container-md | 44.8rem | Controls medium container width |
-| --text-sm | 1.4rem | Controls small text size |
-| --text-sm--line-height | calc(2 / 1.4) | Controls small text line height |
-| --text-lg | 1.8rem | Controls large text size |
-| --text-lg--line-height | calc(2.8 / 1.8) | Controls large text line height |
-| --font-weight-medium | 500 | Controls medium font weight |
-| --font-mono | ui-monospace, SFMono-Regular, etc. | Controls monospace font family |
-| --default-mono-font-family | var(--font-mono) | Controls default monospace font family |
-| --default-transition-duration | .15s | Controls default transition duration |
-| --default-transition-timing-function | cubic-bezier(.4, 0, .2, 1) | Controls default transition timing function |
+| Variable                             | Default Value                                                                                      | Description                                 |
+|--------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------|
+| --spacing                            | .25rem                                                                                             | Controls spacing throughout the editor      |
+| --container-md                       | 28rem                                                                                              | Controls medium container width             |
+| --text-sm                            | .875rem                                                                                            | Controls small text size                    |
+| --text-sm--line-height               | calc(1.25 / .875)                                                                                  | Controls small text line height             |
+| --text-lg                            | 1.125rem                                                                                           | Controls large text size                    |
+| --text-lg--line-height               | calc(1.75 / 1.125)                                                                                 | Controls large text line height             |
+| --font-weight-medium                 | 500                                                                                                | Controls medium font weight                 |
+| --font-mono                          | ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace | Controls monospace font family              |
+| --default-mono-font-family           | var(--font-mono)                                                                                   | Controls default monospace font family      |
+| --default-transition-duration        | .15s                                                                                               | Controls default transition duration        |
+| --default-transition-timing-function | cubic-bezier(.4, 0, .2, 1)                                                                         | Controls default transition timing function |
 
 ### Theme Size Options
 
