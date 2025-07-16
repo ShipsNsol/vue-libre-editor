@@ -157,12 +157,82 @@
           />
         </div>
       </div>
+      
+      <!-- CSS Variables Testing Section -->
+      <div class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50">
+        <h3 class="text-lg font-semibold mb-3">CSS Variables Testing</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Spacing:</label>
+            <input 
+              type="text" 
+              v-model="customCssVars['--spacing']" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="e.g., 4rem, .25rem"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Container Width:</label>
+            <input 
+              type="text" 
+              v-model="customCssVars['--container-md']" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="e.g., 44.8rem, 28rem"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Small Text Size:</label>
+            <input 
+              type="text" 
+              v-model="customCssVars['--text-sm']" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="e.g., 1.4rem, .875rem"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Small Text Line Height:</label>
+            <input 
+              type="text" 
+              v-model="customCssVars['--text-sm--line-height']" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="e.g., calc(2 / 1.4), calc(1.25 / .875)"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Large Text Size:</label>
+            <input 
+              type="text" 
+              v-model="customCssVars['--text-lg']" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="e.g., 1.8rem, 1.125rem"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Large Text Line Height:</label>
+            <input 
+              type="text" 
+              v-model="customCssVars['--text-lg--line-height']" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="e.g., calc(2.8 / 1.8), calc(1.75 / 1.125)"
+            />
+          </div>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm text-gray-600">
+            Current CSS Variables:
+          </p>
+          <pre class="mt-2 p-3 bg-gray-100 rounded-md text-xs overflow-x-auto">{{ JSON.stringify(cssVars, null, 2) }}</pre>
+        </div>
+      </div>
     </div>
 
     <VueLibreEditor
       v-model="content" 
       placeholder="Start typing here..."
       :config="config"
+      :cssVars="cssVars"
       class="mb-8"
     />
 
@@ -214,6 +284,22 @@ import { VueLibreEditorGenerator } from './lib/generate.js';
                                 theme: 'light'
                               });
 
+      // Custom CSS variables for when custom theme is selected
+      const customCssVars = reactive({
+         '--spacing': '.25rem',
+         '--container-md': '28rem',
+         '--text-sm': '.875rem',
+         '--text-sm--line-height': 'calc(1.25 / .875)',
+         '--text-lg': '1.125rem',
+         '--text-lg--line-height': 'calc(1.75 / 1.125)',
+      });
+
+      
+      // Computed property to determine the final CSS variables
+      const cssVars = computed(() => {
+        return customCssVars;
+      });
+
       const updateTheme = () => {
         if (selectedTheme.value === 'none') {
           // Initialize custom theme if not already set
@@ -244,7 +330,10 @@ import { VueLibreEditorGenerator } from './lib/generate.js';
         formattedContent,
         config,
         selectedTheme,
-        updateTheme
+        updateTheme,
+        // CSS Variables Testing
+        customCssVars,
+        cssVars
       };
     }
 };

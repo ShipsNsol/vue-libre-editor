@@ -275,19 +275,130 @@ You can customize the CSS variables used in the editor by using the `cssVars` pr
 
 | Variable | Default Value | Description |
 |----------|---------------|-------------|
-| --spacing | .25rem | Controls spacing throughout the editor |
-| --container-md | 28rem | Controls medium container width |
-| --text-sm | .875rem | Controls small text size |
-| --text-sm--line-height | calc(1.25 / .875) | Controls small text line height |
-| --text-lg | 1.125rem | Controls large text size |
-| --text-lg--line-height | calc(1.75 / 1.125) | Controls large text line height |
+| --spacing | 4rem | Controls spacing throughout the editor |
+| --container-md | 44.8rem | Controls medium container width |
+| --text-sm | 1.4rem | Controls small text size |
+| --text-sm--line-height | calc(2 / 1.4) | Controls small text line height |
+| --text-lg | 1.8rem | Controls large text size |
+| --text-lg--line-height | calc(2.8 / 1.8) | Controls large text line height |
 | --font-weight-medium | 500 | Controls medium font weight |
 | --font-mono | ui-monospace, SFMono-Regular, etc. | Controls monospace font family |
 | --default-mono-font-family | var(--font-mono) | Controls default monospace font family |
 | --default-transition-duration | .15s | Controls default transition duration |
 | --default-transition-timing-function | cubic-bezier(.4, 0, .2, 1) | Controls default transition timing function |
 
+### Theme Size Options
+
+The editor supports two predefined theme sizes:
+
+1. **Large Theme** (Default): Uses larger spacing and font sizes, suitable for content-focused applications.
+2. **Small Theme**: Uses smaller spacing and font sizes, better for compact UIs.
+
+You can also create a custom theme by providing your own values for the CSS variables.
+
 ### Example Usage
+
+#### Large Theme (Default)
+
+The large theme is applied by default, but you can explicitly set it:
+
+```vue
+<template>
+  <VueLibreEditor
+    v-model="content"
+    :config="config"
+    :cssVars="largeThemeVars"
+  />
+</template>
+
+<script>
+import { ref, reactive } from 'vue';
+import { VueLibreEditor } from 'vue-libre-editor'
+import 'vue-libre-editor/dist/vue-libre-editor.css'
+
+export default {
+  components: {
+    VueLibreEditor
+  },
+  setup() {
+    const content = ref('<p>Hello, world!</p>');
+    
+    const config = reactive({
+      // Your regular config here
+    });
+    
+    // Large theme CSS variables (these are the default values)
+    const largeThemeVars = {
+      '--spacing': '4rem',
+      '--container-md': '44.8rem',
+      '--text-sm': '1.4rem',
+      '--text-sm--line-height': 'calc(2 / 1.4)',
+      '--text-lg': '1.8rem',
+      '--text-lg--line-height': 'calc(2.8 / 1.8)'
+    };
+    
+    return {
+      content,
+      config,
+      largeThemeVars
+    };
+  }
+}
+</script>
+```
+
+#### Small Theme
+
+To use the small theme, provide the small theme CSS variables:
+
+```vue
+<template>
+  <VueLibreEditor
+    v-model="content"
+    :config="config"
+    :cssVars="smallThemeVars"
+  />
+</template>
+
+<script>
+import { ref, reactive } from 'vue';
+import { VueLibreEditor } from 'vue-libre-editor'
+import 'vue-libre-editor/dist/vue-libre-editor.css'
+
+export default {
+  components: {
+    VueLibreEditor
+  },
+  setup() {
+    const content = ref('<p>Hello, world!</p>');
+    
+    const config = reactive({
+      // Your regular config here
+    });
+    
+    // Small theme CSS variables
+    const smallThemeVars = {
+      '--spacing': '.25rem',
+      '--container-md': '28rem',
+      '--text-sm': '.875rem',
+      '--text-sm--line-height': 'calc(1.25 / .875)',
+      '--text-lg': '1.125rem',
+      '--text-lg--line-height': 'calc(1.75 / 1.125)'
+    };
+    
+    return {
+      content,
+      config,
+      smallThemeVars
+    };
+  }
+}
+</script>
+```
+
+#### Custom Theme
+
+You can also create a custom theme by providing your own values:
 
 ```vue
 <template>
@@ -316,12 +427,12 @@ export default {
     
     // Custom CSS variables
     const customCssVars = {
-      '--spacing': '4rem',
-      '--container-md': '44.8rem',
-      '--text-sm': '1.4rem',
-      '--text-sm--line-height': 'calc(2 / 1.4)',
-      '--text-lg': '1.8rem',
-      '--text-lg--line-height': 'calc(2.8 / 1.8)'
+      '--spacing': '2rem',
+      '--container-md': '36rem',
+      '--text-sm': '1.2rem',
+      '--text-sm--line-height': 'calc(1.8 / 1.2)',
+      '--text-lg': '1.5rem',
+      '--text-lg--line-height': 'calc(2.2 / 1.5)'
     };
     
     return {
