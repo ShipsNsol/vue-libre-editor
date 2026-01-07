@@ -1,6 +1,6 @@
 <template>
   <div
-    class="vue-libre-editor border"
+    class="vue-libre-editor-root vue-libre-editor border"
     :class="editorThemeClass"
     :style="editorContainerStyle"
   >
