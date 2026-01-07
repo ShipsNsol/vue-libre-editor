@@ -88,6 +88,7 @@ import TableDialog from './editor/TableDialog.vue';
 import TableEditDialog from './editor/TableEditDialog.vue';
 import CellColorDialog from './editor/CellColorDialog.vue';
 import LinkDialog from './editor/LinkDialog.vue';
+import '../globals.css';
 
 
 export default {
@@ -1652,7 +1653,7 @@ export default {
 </script>
 
 <style>
-/* 글로벌 - scoped 없음 */
+/* CSS variables and Tailwind utilities are now imported from editor-globals.css */
 </style>
 
 <style scoped>

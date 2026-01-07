@@ -1,5 +1,4 @@
 import VueLibreEditor from '../../VueLibreEditor/src/components/VueLibreEditor.vue';
-import '../../VueLibreEditor/src/globals.css';
 
 // Export the component as default
 export default VueLibreEditor;
